@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Conferências Tech Portugal</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/monkberry-standalone@latest/monkberry.min.js"></script>
+  <script defer src="/__/firebase/5.2.0/firebase-app.js"></script>
+  <script defer src="/__/firebase/5.2.0/firebase-database.js"></script>
+  <script defer src="/__/firebase/init.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="main.css">
+
+  <style media="screen">
+
+    @media (max-width: 600px) {
+      body,
+      #adicionar {
+        margin-top: 0;
+        background: white;
+        box-shadow: none;
+      }
+      .conference_block {
+        margin-top: 0;
+        background: white;
+        box-shadow: none;
+      }
+      body {
+        border-top: 16px solid #ffa100;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="content">
+    <script type="text/monkberry" id="conferences">
+      {% for i, conference of conferences %}
+          <div class="conference_block">
+            <p><a href={{ conference.website }}>{{conference.name}}</a></p>
+            <p>{{ conference.startday }} -  {{ conference.city }} </p>
+            <p>{{ conference.description }}</p>
+          </div>
+      {% endfor %}
+  </script>
+  </div>
+
+  <div id="adicionar">
+      <a href="https://goo.gl/forms/xr2sUCG4BNc3OGYF3">Adicionar</a>
+    </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', load);
+    function load() {
+      var state = { conferences: [] };
+
+      var view = Monkberry.render(conferences, document.getElementById("content"));
+      firebase.database().ref().orderByChild('startday').on('value', snapshot => {
+        snapshot.forEach(function (childSnapshot) {
+          var childKey = childSnapshot.key;
+          var childData = childSnapshot.val();
+          state.conferences.push(childData);
+          view.update(state);
+        });
+      });
+    }
+  </script>
+</body>
+
+</html>
